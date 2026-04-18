@@ -1,0 +1,31 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{amsmath}
+\usepackage{circuitikz}
+
+\begin{document}
+\begin{circuitikz}[american, thick, scale=1.0]
+
+    \draw (0,0) node[ground] {} to[V, l=$v_s$] (0,3);
+    \draw (0,3) -- (2,3) coordinate (B);
+
+    \node[above] at (B) {$v_\pi$};
+    \draw (B) to[R, l=$r_\pi$] (2,0) node[ground] {};
+
+    \draw (6,3) coordinate (Cnode);
+    \node[above] at (Cnode) {$v_{out}$};
+
+    \draw (Cnode) to[american controlled current source, l_=$g_m v_\pi$] (6,0) node[ground] {};
+
+    \draw (Cnode) -- (8,3);
+    \draw (8,3) to[R, l_=$r_o$] (8,0) node[ground] {};
+
+    \draw (Cnode) -- (10,3);
+    \draw (10,3) to[R, l_=$R_C$] (10,0) node[ground] {};
+
+    \draw (Cnode) -- (12,3);
+    \draw (12,3) to[C, l_=$C_L$] (12,0) node[ground] {};
+
+    \draw (Cnode) to[short, -o] (14,3) node[right] {$v_{out}$};
+
+\end{circuitikz}
+\end{document}

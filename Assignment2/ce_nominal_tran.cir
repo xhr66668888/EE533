@@ -1,0 +1,10 @@
+* Common-emitter amplifier (nominal) - transient for part c
+Vcc   vcc  0   5
+Vs    vb   0   SIN(0.69 500u 10)
+Q1    vc   vb  0   QMOD
+Rc    vcc  vc  1k
+Cl    vc   0   100n
+.model QMOD NPN(Is=1e-14 Bf=300 Vaf=100)
+.tran 0 0.5 0 100u
+.backanno
+.end

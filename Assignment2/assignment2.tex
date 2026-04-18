@@ -1,0 +1,88 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{circuitikz}
+\usepackage{xcolor}
+
+% 设置段落格式，使其更接近原图布局
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+\textbf{Problem 1: Common-emitter amplifier, small-signal analysis}
+
+\vspace{1.5em}
+
+\begin{center}
+\begin{circuitikz}[american, thick, scale=1.0]
+    % 核心晶体管 BJT (NPN)
+    \draw (6, 2) node[npn] (Q) {};
+
+    % 输入端 (Sensor) 及接地
+    \draw (1, 0) node[ground] {} to[V, l=$V_s$] (1, 2);
+    \draw (1, 2) to[R, l=$R_S$] (3.5, 2) -- (Q.B);
+
+    % 发射极接地
+    \draw (Q.E) -- (6, 0) node[ground] {};
+
+    % 集电极电路与 Rc
+    \draw (Q.C) -- (6, 4) coordinate (Vc) node[circ] {};
+    \draw (Vc) to[R, l_=$R_C$] (6, 6) coordinate (Vcc);
+
+    % 顶部 Vcc 的加粗 T 型横杠
+    \draw[ultra thick] (5.4, 6) -- (6.6, 6);
+    \node[above] at (6, 6.1) {$V_{CC}$};
+
+    % 输出分支 (负载电容 C_L)
+    \draw (Vc) -- (8, 4) coordinate (CL) node[circ] {};
+    \draw (CL) to[C, l=$C_L$] (8, 0) node[ground] {};
+
+    % 输出分支 (负载电阻 R_L)
+    \draw (CL) -- (10, 4) coordinate (RL) node[circ] {};
+    \draw (RL) to[R, l=$R_L$] (10, 0) node[ground] {};
+
+    % 输出端 V_out
+    \draw (RL) to[short, -o] (11.5, 4) node[right] {$V_{out}$};
+
+    % Sensor 虚线框
+    \draw[thick, dashed] (0, -0.8) rectangle (4.5, 3.2);
+    \node at (2.25, 3.6) {\Large \textit{sensor}};
+
+    % r_in 输入阻抗指示箭头
+    \draw[->, >=stealth, very thick] (4.9, 0.8) node[below] {\Large $r_{in}$} -- (4.9, 1.6) -- (5.4, 1.6);
+\end{circuitikz}
+\end{center}
+
+\vspace{1em}
+
+The common-emitter amplifier can be used to achieve high levels of voltage gain in analog circuits. However, gain can be affected by loading at both the input and output of the amplifier, so we need to ensure that minimal loading occurs when the amplifier is connected to a sensor or other circuit blocks. In addition, the bandwidth over which the maximum gain can be achieved is limited by the presence of capacitance, which results in loading at higher frequencies (away from DC).
+
+For the following, $T = 27^\circ\text{C}$, $R_C = 1\text{k}\Omega$, $V_S(DC) = 0.69\text{V}$, $V_{CC} = 5\text{V}$, and $C_L = 100\text{nF}$
+
+Use the NXP 2N3904 \textit{npn} transistor ($V_A = 100\text{V}$, $\beta = 300$, $I_S = 10^{-14}$) for your analysis and simulations.
+
+\vspace{1.5em}
+\underline{\textit{Analysis}}
+
+\textbf{a)} Sketch the small-signal model and determine an expression for the transfer function $\frac{V_{out}}{V_s}(s)$ in terms of $g_m$, $R_C$, $r_o$, and $C_L$. Assume no DC loading (i.e. $R_S \rightarrow 0$ and $R_L \rightarrow \infty$).
+
+\textbf{b)} Calculate the DC gain, input resistance, output resistance, and 3dB bandwidth of the amplifier (again, assuming no loading) using the component and parameter values provided. Plot the frequency response (magnitude and phase) of $\frac{V_{out}}{V_s}(s)$.
+
+\vspace{1.5em}
+\underline{\textit{Simulation/Design}}
+
+\textbf{c)} Simulate the DC operating point (.op analysis) of the circuit in SPICE (still no loading, $R_S \rightarrow 0$ and $R_L \rightarrow \infty$). Provide a screen capture of your circuit with all DC operating points labeled (right-click on the net and select \textit{Place .op Data Label}).
+
+Perform an AC simulation of the circuit and plot the frequency response. Indicate both the gain at $f = 10\text{Hz}$ and the 3dB bandwidth on the magnitude plot.
+
+Perform a transient analysis of the circuit to verify the gain. Use a sinusoidal voltage as an input signal with an amplitude of $500\mu\text{V}$, frequency of $10\text{Hz}$, and DC offset of $0.69\text{V}$. Show that the peak-to-peak amplitude of the output agrees with your calculation from Part b and your AC analysis result.
+
+\textbf{d)} Calculate the values of $R_S$ and $R_L$ that each result in 1\% attenuation from input to output ($V_s$ to $V_{out}$). Calculate each value separately (such that the combined attenuation would be around 2\%). Verify your calculations by including the calculated values of $R_S$ and $R_L$ in your SPICE simulation.
+
+\vspace{2em}
+
+% 模拟底部的 Jupyter cell 输入框
+\texttt{\textcolor{blue}{In [ ]:}} \framebox[\linewidth]{\rule{0pt}{1.5ex}\hspace{\linewidth}}
+
+\end{document}

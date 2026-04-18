@@ -1,0 +1,11 @@
+* Common-emitter amplifier (nominal, R_S=0, R_L=open) - .op + .ac
+Vcc   vcc  0   5
+Vs    vb   0   DC 0.69 AC 1
+Q1    vc   vb  0   QMOD
+Rc    vcc  vc  1k
+Cl    vc   0   100n
+.model QMOD NPN(Is=1e-14 Bf=300 Vaf=100)
+.op
+.ac dec 100 1 1Meg
+.backanno
+.end
