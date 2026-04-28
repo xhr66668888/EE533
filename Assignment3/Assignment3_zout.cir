@@ -1,0 +1,15 @@
+* Assignment 3: output impedance check
+Vin vin 0 DC 0.9 AC 0
+Vdd vdd 0 DC 5
+Rd vdd v1 5k
+M1 v1 vin 0 0 nmos L=1u W=100u
+Q1 vdd v1 vout MAT02
+Re vout 0 2k
+Cl vout 0 1u
+Itest vout 0 AC 1
+.lib level1_mos.cir
+.model MAT02 NPN(IS=0.6p BF=500 VAF=150)
+.ac dec 10 1 10
+.meas ac zout FIND mag(V(vout)) AT=1
+.backanno
+.end

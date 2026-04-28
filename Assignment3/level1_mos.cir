@@ -1,0 +1,15 @@
+* Level 1 MOS
+
+.model nmos nmos
+
++LEVEL = 1		VTO = 0.7		GAMMA = 0.45		PHI = 0.9
++NSUB = 9E14	LD = 1E-9    	UO = 350		    LAMBDA = 0.01
++TOX = 9E-9		PB = 0.9		CJ = 0.56e-3		CJSW = 0.35E-11
++MJ = 0.45		MJSW = 0.2		CGDO = 0.4E-9		JS = 1.0E-8
+
+.model pmos pmos
+
++LEVEL = 1		VTO = -0.8		GAMMA = 0.4			PHI = 0.8
++NSUB = 5E14	LD = 0.09E-6	UO = 100			LAMBDA = .2
++TOX = 9E-9		PB = 0.9		CJ = 0.94e-3		CJSW = 0.32E-11
++MJ = 0.5		MJSW = 0.3		CGDO = 0.3E-9		JS = 0.5E-8

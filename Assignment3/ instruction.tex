@@ -1,0 +1,130 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[american]{circuitikz}
+
+\begin{document}
+
+\noindent \textit{Please show your work}
+
+\vspace{1em}
+
+\noindent \textbf{Problem 1: Common-source amplifier with emitter-follower output stage}
+
+\begin{center}
+\begin{circuitikz}[thick, scale=0.9, transform shape]
+    % ==========================================
+    % 第一级：NMOS 共源极放大器 (M1)
+    % ==========================================
+    \node[nmos] (M1) at (0, 1.5) {};
+    \node at (1, 0.8) {$M_1$};
+
+    % 输入端 Vin
+    \draw let \p1=(M1.G) in 
+        (\x1-1, \y1) node[ocirc] {} node[left] {$V_{in}$} -- (M1.G);
+
+    % M1 源极接地
+    \draw let \p1=(M1.S) in 
+        (\x1, \y1) -- (\x1, 0) node[ground] {};
+
+    % V1 节点
+    \coordinate (V1) at (0, 3.5);
+    \draw (M1.D) -- (V1);
+    \filldraw (V1) circle (2pt);
+
+    % 漏极电阻 RD 和 第一路 VDD
+    \coordinate (VDD1) at (0, 6);
+    \draw (VDD1) to[short, i=$I_d$] (0, 5) to[R, l=$R_D$] (V1);
+    \draw[ultra thick] ($(VDD1)+(-0.4,0)$) -- ($(VDD1)+(0.4,0)$) node[midway, above] {$V_{DD}$};
+
+    % ==========================================
+    % 第二级：NPN 射极跟随器 (Q1)
+    % ==========================================
+    \node[npn, anchor=B] (Q1) at (3, 3.5) {};
+    \node at (4.3, 3.3) {$Q_1$};
+    
+    \draw (V1) -- (Q1.B) node[midway, above] {$V_1$};
+
+    % Q1 集电极和 第二路 VDD
+    \coordinate (VDD2) at (3, 6);
+    \draw (VDD2) to[short, i=$I_c$] (Q1.C);
+    \draw[ultra thick] ($(VDD2)+(-0.4,0)$) -- ($(VDD2)+(0.4,0)$) node[midway, above] {$V_{DD}$};
+
+    % ==========================================
+    % 输出网络：RE, CL, Vout
+    % ==========================================
+    \coordinate (E_node) at (3, 2.3);
+    \draw (Q1.E) -- (E_node);
+    \filldraw (E_node) circle (2pt);
+
+    \draw (E_node) to[R, l=$R_E$] (3, 0) node[ground] {};
+
+    \coordinate (C_node) at (5, 2.3);
+    \draw (E_node) -- (C_node);
+    \filldraw (C_node) circle (2pt);
+    
+    \draw (C_node) to[C, l=$C_L$] (5, 0) node[ground] {};
+
+    \coordinate (Vout_node) at (6, 2.3);
+    \draw (C_node) -- (Vout_node) node[ocirc] {} node[right] {$V_{out}$};
+\end{circuitikz}
+\end{center}
+
+\vspace{1em}
+
+\noindent The MOSFET-based common-source amplifier can be combined with a BJT emitter-follower output stage to construct a circuit that provides voltage gain while taking advantage of the high input impedance of the MOSFET and low output impedance of the emitter follower.
+
+\vspace{1em}
+
+\noindent For the following, $T = 27C$, $R_D = 5k\Omega$, $R_E = 2k\Omega$, $V_{IN,DC} = 0.9V$, $V_{DD} = 5V$, and $C_L = 1uF$
+
+\vspace{1em}
+
+\noindent Use the Analog Devices MAT-02 npn transistor ($V_A = 150V$, $\beta = 500$, $I_S = 0.6pA$) for your analysis and simulations.
+
+\vspace{1em}
+
+\noindent Use the Level 1 NMOS SPICE model provided with the assignment ($\mu = 350$, $C_{ox} = 384nF/m^2$, $V_{th} = 0.7V$, $\lambda = 0.01V^{-1}$, $W = 100\mu m$, $L = 1\mu m$).
+
+\vspace{2em}
+
+\noindent \underline{\textit{Analysis}}
+
+\vspace{1em}
+
+\noindent \textbf{a)} Estimate the DC operating point of the circuit ($I_{D0}$, $I_{C0}$, $V_{1,DC}$, and $V_{OUT,DC}$) assuming $\lambda = 0$ for $M_1$ and $V_{BE} = 0.6V$, $I_B = 0$ for $Q_2$.
+
+\vspace{1.5em}
+
+\noindent \textbf{b)} Calculate the output resistance of the common-source stage (include $r_o$ of $M_1$), the input-resistance of the emitter-follower stage (\textit{hint: this is not just }$r_\pi$\textit{!}), and the output resistance of the emitter-follower (*hint: don't forget to use output resistance of common-source stage when calculating output resistance of emitter-follower.*)
+
+\vspace{1.5em}
+
+\noindent \textbf{c)} Calculate the small-signal voltage gain and 3dB bandwidth $\left( f_{3dB} = \frac{\omega_0}{2\pi} \right)$ of the circuit assuming $C_L$ is the only capacitance.
+
+\vspace{2em}
+
+\noindent \underline{\textit{Simulation}}
+
+\vspace{1em}
+
+\noindent \textbf{d)} Simulate the DC operating point (.op analysis) of the circuit in SPICE. Provide a screen capture of your circuit with all DC operating points labeled (right-click on the net and select \textit{Place .op Data Label}).
+
+\vspace{1em}
+
+\noindent Perform an AC simulation of the circuit and plot the frequency response. Indicate both the gain at $f = 10Hz$ and the 3dB bandwidth on the magnitude plot.
+
+\vspace{1em}
+
+\noindent Using either an AC analysis or DC Transfer analysis, simulate the DC input and output impedances of the circuit as discussed in Lecture 4.
+
+\vspace{2em}
+
+\noindent \textit{A few words on hand calculations versus simulation results: It is expected that your simulation results will not agree perfectly with your calculations. This is actually the purpose of using SPICE for verification, in that more detailed and more accurate models are employed to provide a more accurate prediction of circuit performance than the simple models used for "back-of-the-envelope" analysis. That being said, our simple models should gives us enough guidance on making design decisions, particularly if simulation results are different from what we expect.}
+
+\vspace{1.5em}
+
+\noindent \texttt{In [ ]:}
+
+\end{document}
