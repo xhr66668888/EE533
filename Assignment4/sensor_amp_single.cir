@@ -1,0 +1,27 @@
+* Assignment 4 Part 2c: single-stage non-inverting sensor amplifier
+* Vs DC=100mV checks the worst positive output voltage: Vout ~= 4V.
+* AC=1 lets LTspice plot V(out)/V(in) directly as closed-loop gain.
+.param Aol=1Meg
+.param GBW=10Meg
+.param Rg=12.5
+.param Rf=487.5
+
+Vs    in   0    DC 100m AC 1
+Vpos  vcc  0    DC 5
+Vneg  vee  0    DC -5
+
+XU1   in   fb   vcc  vee  out  level2 Avol={Aol} GBW={GBW} Slew=10Meg Ilimit=10m Rail=0 Vos=0 En=0 Enk=0 In=0 Ink=0 Rin=500Meg Rout=1
+R1    fb   0    {Rg}
+R2    out  fb   {Rf}
+
+.op
+.ac dec 100 10 100Meg
+.meas op vout_dc FIND V(out)
+.meas op vfb_dc FIND V(fb)
+.meas op i_feedback PARAM abs(V(out)/500)
+.meas ac gain10 FIND mag(V(out)/V(in)) AT=10
+.meas ac f_1pct WHEN mag(V(out)/V(in))=39.6 FALL=1
+.meas ac f_3db WHEN mag(V(out)/V(in))=gain10/sqrt(2) FALL=1
+.lib UniversalOpAmp2.lib
+.backanno
+.end

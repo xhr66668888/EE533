@@ -1,0 +1,30 @@
+* Assignment 4 bonus: two non-inverting stages with the same total gain.
+* Each stage gain is sqrt(40), so the total gain is 40 V/V.
+.param Aol=1Meg
+.param GBW=10Meg
+.param Gstage=sqrt(40)
+.param Rg=1k
+.param Rf={(Gstage-1)*Rg}
+
+Vs    in    0    DC 100m AC 1
+Vpos  vcc   0    DC 5
+Vneg  vee   0    DC -5
+
+XU1   in    fb1  vcc  vee  mid   level2 Avol={Aol} GBW={GBW} Slew=10Meg Ilimit=10m Rail=0 Vos=0 En=0 Enk=0 In=0 Ink=0 Rin=500Meg Rout=1
+R1A   fb1   0    {Rg}
+R2A   mid   fb1  {Rf}
+
+XU2   mid   fb2  vcc  vee  out   level2 Avol={Aol} GBW={GBW} Slew=10Meg Ilimit=10m Rail=0 Vos=0 En=0 Enk=0 In=0 Ink=0 Rin=500Meg Rout=1
+R1B   fb2   0    {Rg}
+R2B   out   fb2  {Rf}
+
+.op
+.ac dec 100 10 100Meg
+.meas op mid_dc FIND V(mid)
+.meas op vout_dc FIND V(out)
+.meas ac gain10 FIND mag(V(out)/V(in)) AT=10
+.meas ac f_1pct WHEN mag(V(out)/V(in))=39.6 FALL=1
+.meas ac f_3db WHEN mag(V(out)/V(in))=gain10/sqrt(2) FALL=1
+.lib UniversalOpAmp2.lib
+.backanno
+.end
