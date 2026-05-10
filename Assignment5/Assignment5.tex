@@ -1,0 +1,156 @@
+\documentclass[11pt, a4paper]{article}
+
+% 包引入
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{circuitikz}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{parskip} % 使段落之间有适当间距，无需手动使用 \vspace
+
+\begin{document}
+
+\textbf{Problem 1: Differential amplifier analysis and design}
+
+\begin{figure}[h!]
+    \centering
+    % 使用 scale=0.85 防止电路图超出页面边界
+    \begin{circuitikz}[american, very thick, scale=0.85, transform shape]
+        % 1. 惠斯通电桥顶点坐标
+        \coordinate (T) at (0, 2);     
+        \coordinate (B) at (0, 0);     
+        \coordinate (L) at (-1.5, 1);  
+        \coordinate (R) at (1.5, 1);   
+
+        % 2. 绘制电桥电阻
+        \draw (L) to[R, l=$R$] (T);
+        \draw (T) to[R, l=$R+\Delta R$] (R);
+        \draw (L) to[R, l_=$R+\Delta R$] (B);
+        \draw (B) to[R, l_=$R$] (R);
+
+        \node[circ] at (T) {};
+        \node[circ] at (B) {};
+        \node[circ] at (L) {};
+        \node[circ] at (R) {};
+
+        % 3. 供电与接地
+        \draw (T) -- ++(0, 0.6) coordinate (VCC);
+        \draw[ultra thick] ([xshift=-0.6cm]VCC) -- ([xshift=0.6cm]VCC);
+        \node[above] at (VCC) {$+5V$};
+        \draw (B) -- ++(0, -0.4) node[ground]{};
+
+        % 4. 核心信号通路
+        \draw (R) -- (2.5, 1) to[R, l=$R_1$] (5, 1) coordinate (node_top);
+        \node[circ] at (node_top) {};
+
+        \draw (L) -- (-2.5, 1) -- (-2.5, -1.5) -- (2.5, -1.5) to[R, l_=$R_1$] (5, -1.5) coordinate (node_bot);
+        \node[circ] at (node_bot) {};
+
+        % 5. 运算放大器
+        \node[op amp] (OA) at (8, 0) {};
+        \draw (OA.up) -- ++(0, 0.4) node[ocirc]{} node[above]{$+5V$};
+        \draw (OA.down) -- ++(0, -0.4) node[ground]{};
+
+        % 6. 连接至运放引脚的阶梯走线
+        \draw (node_top) |- (OA.-);
+        \draw (node_bot) |- (OA.+);
+
+        % 7. 反馈与参考电阻
+        \draw (node_top) -- (5, 2.5) to[R, l=$R_2$] (10.5, 2.5) -- (10.5, 0);
+        \draw (node_bot) to[R, l=$R_2$] (5, -3.5) node[ocirc]{} node[below]{$V_{REF}$};
+
+        % 8. 输出端
+        \draw (OA.out) -- (11.5, 0) node[ocirc]{} node[right]{$V_{out}$};
+        \node[circ] at (10.5, 0) {};
+    \end{circuitikz}
+    \caption*{\textbf{Figure 1a. Wheatstone bridge amplifier}}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \begin{circuitikz}[american, very thick, scale=0.85, transform shape]
+        % 1. 运算放大器 U1, U2, U3
+        \node[op amp, noinv input up] (U1) at (0, 3) {};
+        \node at (0, 4.3) {$U_1$};
+        \node[op amp] (U2) at (0, -3) {};
+        \node at (0, -4.3) {$U_2$};
+        \node[op amp] (U3) at (7, 0) {};
+        \node at (7, 1.3) {$U_3$};
+
+        % 2. 左侧输入端
+        \draw (-2.5, 3.5) node[ocirc]{} node[left]{$V_{ip}$} -- (U1.+);
+        \draw (-2.5, -3.5) node[ocirc]{} node[left]{$V_{im}$} -- (U2.+);
+
+        % 3. 中间垂直电阻串
+        \coordinate (N1) at (2, 3);
+        \coordinate (N2) at (2, 1);
+        \coordinate (N3) at (2, -1);
+        \coordinate (N4) at (2, -3);
+
+        \draw (U1.out) -- (N1);
+        \draw (U2.out) -- (N4);
+
+        \draw (N1) to[R, l=$R_{fp}$] (N2);
+        \draw (N2) to[R, l=$R_G$] (N3);
+        \draw (N3) to[R, l=$R_{fm}$] (N4);
+
+        % 4. 深度反馈回路
+        \draw (N2) -- (-1.5, 1) |- (U1.-);
+        \draw (N3) -- (-1.5, -1) |- (U2.-);
+
+        % 5. 后级差分放大电路
+        \coordinate (N5) at (5, 3);
+        \coordinate (N6) at (5, -3);
+
+        \draw (N1) to[R, l=$R_1$] (N5);
+        \draw (N4) to[R, l_=$R_1$] (N6);
+
+        \draw (N5) |- (U3.-);
+        \draw (N6) |- (U3.+);
+
+        \coordinate (OutNode) at (9, 0);
+
+        \draw (N5) to[R, l=$R_2$] (9, 3) -- (OutNode);
+        \draw (U3.out) -- (OutNode);
+        \draw (N6) to[R, l_=$R_2$] (9, -3) node[ocirc]{} node[right]{$V_{ref}$};
+
+        % 6. Nodes & Output
+        \node[circ] at (N1) {};
+        \node[circ] at (N2) {};
+        \node[circ] at (N3) {};
+        \node[circ] at (N4) {};
+        \node[circ] at (N5) {};
+        \node[circ] at (N6) {};
+        \node[circ] at (OutNode) {};
+
+        \draw (OutNode) -- (10, 0) node[ocirc]{} node[right]{$V_{out}$};
+    \end{circuitikz}
+    \caption*{\textbf{Figure 1b. Instrumentation amplifier}}
+\end{figure}
+
+A difference amplifier can be used to amplify the signal from a Wheatstone bridge, but loading is a concern due to the finite input resistance of the amplifier.
+
+To determine the extent of loading, we need to quantify the output resistance of the bridge circuit and the input resistance of the amplifier.
+
+\underline{\textit{Analysis/Design}}
+
+\textbf{a)} Determine expressions for the output resistance $R_S$ of the bridge circuit and the input resistance $R_{in}$ of the amplifier. Use the same approach you would use to determine the Thevenin resistance of a single-ended circuit (i.e. do not assume a balanced differential signal). Assume the opamp is ideal.
+
+Assuming the Wheatstone bridge resistance $R = 500\,\Omega$, design the difference amplifier (i.e. determine values for $R_1$ and $R_2$) to provide a gain of $20\,\text{dB}$ with a maximum of $1\%$ input attenuation due to loading.
+
+\underline{\textit{Design/Simulation}}
+
+\textbf{b)} Implement the design of the difference amplifier in LTspice using the ADA4661-2 opamp from Analog Devices (this model is included by default in the LTspice component library). Use a single-ended supply voltage $V_{DD} = 5\,\text{V}$. For $V_{REF}$, use a voltage divider and voltage buffer (opamp in unity-gain feedback, as discussed in lecture - you can use the ADA4661-2 for this as well).
+
+Perform an AC simulation to verify that the DC gain is $20\,\text{dB}$, and determine the $3\,\text{dB}$ bandwidth of the amplifier.
+
+\textbf{c)} Use the Wheatstone bridge model provided on the course Canvas page to simulate the full design. The voltage \textit{delta\_R} allows you to control $\Delta R$ ($B_1$ and $B_2$ are utilized as voltage-controlled resistances to emulate the behavior of a strain gage).
+
+Determine the maximum $\Delta R$ allowable without exceeding $80\%$ of the supply voltage (i.e. $V_{out}$ can swing from $0.5\,\text{V}$ to $4.5\,\text{V}$). Perform a transient simulation to verify your design. Implement $V(delta\_R)$ as a sinusoidal voltage with amplitude $\Delta R$ and a frequency of $1\,\text{kHz}$. Submit plots of the output voltage of the bridge and $V_{out}$ to show that your design meets the swing and $1\%$ max attenuation specifications.
+
+Include your schematic with your submission with all DC node voltages displayed. Show the supply current (this is the current coming from the DC voltage source used to supply the bridge and opamp), and calculate the total power dissipated by the circuit.
+
+\textbf{d)} An instrumentation amplifier can be used to realize a much higher input impedance than the difference amplifier. Construct the instrumentation amplifier shown in Fig. 1b to achieve a gain of $20\,\text{dB}$, and run a transient simulation with the Wheatstone bridge model to show that the signal amplitude is increased due to the absence of loading. Submit your schematic with all DC node voltages shown.
+
+\end{document}

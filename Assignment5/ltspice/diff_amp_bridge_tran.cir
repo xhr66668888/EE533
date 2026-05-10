@@ -1,0 +1,40 @@
+* Assignment 5 part c - Wheatstone bridge + difference amplifier transient check
+* Uses behavioral resistors for the strain-gage arms.
+* The formal screenshot should use ADA4661-2 op amps in a schematic.
+
+.param R=500 R1=25k R2=250k DR=38.8 Aol=1e6 GBW=4Meg
+
+VDD      vdd      0        5
+Vdelta   delta_R  0        SINE(0 {DR} 1k)
+
+* Bridge: bplus is the left bridge output, bminus is the right bridge output.
+Rtl      vdd      bplus    {R}
+Bbl      bplus    0        I=V(bplus,0)/({R}+V(delta_R))
+Btr      vdd      bminus   I=V(vdd,bminus)/({R}+V(delta_R))
+Rbr      bminus   0        {R}
+
+* Vref = 2.5 V from divider and unity buffer
+Rvtop    vdd      vdiv     100k
+Rvbot    vdiv     0        100k
+XBUF     vdiv     vref     vref     OP1P
+
+* Difference amplifier, gain = 10
+R1p      bplus    vp       {R1}
+R2p      vp       vref     {R2}
+R1m      bminus   vm       {R1}
+R2m      vm       out      {R2}
+XDIFF    vp       vm       out      OP1P
+
+.tran 0 5m 0 1u
+.meas tran bridge_pp PP V(bplus,bminus) FROM=1m TO=5m
+.meas tran out_min MIN V(out) FROM=1m TO=5m
+.meas tran out_max MAX V(out) FROM=1m TO=5m
+.meas tran Isupply AVG (-I(VDD)) FROM=1m TO=5m
+.meas tran Ptotal PARAM 5*Isupply
+
+.subckt OP1P inp inm out
+Eol out 0 LAPLACE {V(inp,inm)} {Aol/(1+s/(2*pi*(GBW/Aol)))}
+.ends OP1P
+
+.backanno
+.end
