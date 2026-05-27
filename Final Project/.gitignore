@@ -1,0 +1,4 @@
+.venv/
+.lecture_text/
+.ipynb_checkpoints/
+__pycache__/
