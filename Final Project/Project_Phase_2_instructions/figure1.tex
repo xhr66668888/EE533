@@ -1,0 +1,63 @@
+
+\vspace{2em}
+\begin{center}
+\resizebox{0.9\textwidth}{!}{
+\begin{tikzpicture}[
+    line width=1.2pt,
+    line cap=round,
+    line join=round
+]
+% 1. Wheatstone Bridge
+\draw (-2,0) to[R] (0,2);
+\draw (0,2) to[R] (2,0);
+\draw (2,0) to[R] (0,-2);
+\draw (0,-2) to[R] (-2,0);
+\node at (-1.5, 1.2) {$R$};
+\node at (1.8, 1.2) {$R + \Delta R$};
+\node at (-2.1, -1.2) {$R + \Delta R$};
+\node at (1.5, -1.2) {$R$};
+\draw (0,2) -- (0,2.7);
+\draw (-0.5, 2.7) -- (0.5, 2.7);
+\node at (0, 3.1) {$V_{DD}$};
+\fill (0,2) circle (2.5pt); 
+\draw (0,-2) -- (0,-2.7);
+\draw (-0.4, -2.7) -- (0.4, -2.7);
+\draw (-0.25, -2.85) -- (0.25, -2.85);
+\draw (-0.1, -3.0) -- (0.1, -3.0);
+\fill (0,-2) circle (2.5pt); 
+
+% 2. Instrumentation Amplifier
+\draw (4.5, 0.8) rectangle (5.2, -1.8);
+\draw (5.2, 0.8) -- (7.8, -0.5) -- (5.2, -1.8);
+\node at (4.85, 0) {$\boldsymbol{-}$};
+\node at (4.85, -1) {$\boldsymbol{+}$};
+
+% 3. Lowpass filter
+\draw (9.5, 1) rectangle (13.5, -2);
+\draw (10.3, 0.5) -- (11.8, 0.5) to[out=0, in=100] (12.6, -1.2);
+
+% 4. ADC
+\draw (14.8, -0.5) -- (15.5, 0.8) -- (17.3, 0.8) -- (17.3, -1.8) -- (15.5, -1.8) -- cycle;
+\node[font=\sffamily] at (16.4, -0.5) {ADC};
+
+% 5. Routing
+\draw (2,0) -- (4.5,0);
+\draw (-2,0) -- (-3.2,0) -- (-3.2,-2.4) -- (3.2,-2.4) -- (3.2,-1) -- (4.5,-1);
+\node at (3.8, -0.5) {$V_{in}$};
+\draw (7.8, -0.5) -- (9.5, -0.5);
+\draw (13.5, -0.5) -- (14.8, -0.5);
+\draw (17.3, -0.5) -- (19, -0.5);
+\draw[fill=white] (19.1, -0.5) circle (0.1);
+\draw (18.0, -0.75) -- (18.3, -0.25);
+\node at (19.8, -0.5) {$D_{out}$};
+\end{tikzpicture}
+}
+\end{center}
+
+\vspace{0.5em}
+\begin{center}
+\textbf{Figure 1. Strain gage signal condition architecture.}
+\end{center}
+\vspace{1em}
+
+\textbf{Fig 1.} show the sensor signal conditioning ``front-end'' architecture for a strain gage sensor. The differential output voltage of the strain gage is amplified by the instrumentation amplifier and converted to a single-ended voltage. The output of the amplifier is fed to a lowpass filter which sets the noise 
